@@ -3,12 +3,13 @@ from TrafficStream import TrafficStream
 import simulation
 
 def main():
-    monitor = TrafficStream()
+    window_size = 4000
+    monitor = TrafficStream(window_size=window_size)
     
     raw_stream = simulation.get_traffic_data_stream(20000)
     total_samples = len(raw_stream)
     
-    print(f"--- Starting Analysis (N={total_samples}) ---")
+    print(f"--- Starting Analysis (N={total_samples}, Window={window_size}) ---")
     start_time = time.time()
     
     header = f"{'Index':<8} | {'Traffic Status':<18} | {'P15':<6} | {'P50':<6} | {'P85':<6}"
