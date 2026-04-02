@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Percentile Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <header class="hero">
+            <div>
+                <p class="eyebrow">Real-Time Traffic Analytics</p>
+                <h1>Sliding-Window Percentile Dashboard</h1>
+                <p class="subtitle">
+                    Live monitoring of P15, P50, and P85 from the TrafficStream four-heap core.
+                </p>
+            </div>
+            <div class="hero-actions">
+                <div class="pill subtle-pill">
+                    <span class="pill-label">Polling</span>
+                    <span id="poll-rate">{{ poll_interval_ms }} ms</span>
+                </div>
+                <button id="reset-button" class="reset-button" type="button">Restart Simulation</button>
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            <section class="panel chart-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="panel-kicker">Trend View</p>
+                        <h2>Rolling Percentiles</h2>
+                    </div>
+                    <div class="panel-badges">
+                        <span id="phase-badge" class="badge phase-badge">Waiting for stream</span>
+                        <span id="status-badge" class="badge status-badge neutral">Starting</span>
+                    </div>
+                </div>
+                <div class="chart-wrap">
+                    <canvas id="trafficChart"></canvas>
+                </div>
+            </section>
+
+            <section class="metrics-grid">
+                <article class="panel metric-card accent-p15">
+                    <p class="metric-label">P15</p>
+                    <p id="p15-value" class="metric-value">0.0</p>
+                    <p class="metric-note">Lower-speed edge of the active window</p>
+                </article>
+                <article class="panel metric-card accent-p50">
+                    <p class="metric-label">P50</p>
+                    <p id="p50-value" class="metric-value">0.0</p>
+                    <p class="metric-note">Median traffic speed driving system status</p>
+                </article>
+                <article class="panel metric-card accent-p85">
+                    <p class="metric-label">P85</p>
+                    <p id="p85-value" class="metric-value">0.0</p>
+                    <p class="metric-note">Upper-speed edge of the active window</p>
+                </article>
+                <article class="panel details-card">
+                    <div class="details-badges">
+                        <div class="detail-badge-block">
+                            <span class="detail-badge-label">Current phase</span>
+                            <strong id="phase-text">Waiting for stream</strong>
+                        </div>
+                        <div class="detail-badge-block">
+                            <span class="detail-badge-label">Traffic status</span>
+                            <strong id="status-text">Starting</strong>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span>Current speed</span>
+                        <strong id="speed-text">0.0 mph</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Window fill</span>
+                        <strong id="window-text">0 / 120</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Last update</span>
+                        <strong id="timestamp-text">--:--:--</strong>
+                    </div>
+                </article>
+            </section>
+
+            <section class="panel events-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="panel-kicker">Recent Samples</p>
+                        <h2>Latest Inserted Speeds</h2>
+                    </div>
+                </div>
+                <div id="events-list" class="events-list"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        window.dashboardConfig = {
+            pollIntervalMs: {{ poll_interval_ms }}
+        };
+    </script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
