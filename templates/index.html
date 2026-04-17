@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Traffic Percentile Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
     <div class="page-shell">
         <header class="hero">
@@ -25,6 +29,7 @@
                     <span id="poll-rate">{{ poll_interval_ms }} ms</span>
                 </div>
                 <button id="reset-button" class="reset-button" type="button">Restart Simulation</button>
+                <a href="/routes" class="pill subtle-pill">Route Recommendation →</a>
             </div>
         </header>
 
@@ -107,4 +112,5 @@
     </script>
     <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
+
 </html>
