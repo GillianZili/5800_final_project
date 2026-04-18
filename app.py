@@ -4,7 +4,7 @@ from collections import deque
 
 from flask import Flask, jsonify, render_template
 
-import simulation
+import data_loader
 from TrafficStream import TrafficStream
 
 
@@ -13,7 +13,7 @@ POLL_INTERVAL_SECONDS = 0.75
 RECENT_EVENT_LIMIT = 8
 SIMULATION_BATCH_SIZE = 600
 
-ROUTE_NAMES = ["Highway 101", "Route 280", "El Camino Real"]
+ROUTE_NAMES = ["I-101", "I-580", "I-680"]
 NUM_ROUTES = len(ROUTE_NAMES)
 
 
@@ -48,7 +48,7 @@ class TrafficDashboardState:
 
     def _reset_locked(self) -> None:
         self._stream = TrafficStream(window_size=self.window_size)
-        self._sequence = simulation.get_traffic_data_stream(SIMULATION_BATCH_SIZE)
+        self._sequence = data_loader.get_traffic_data_stream(SIMULATION_BATCH_SIZE)
         self._sequence_index = 0
         self._recent_events.clear()
         self._step = 0
@@ -102,7 +102,7 @@ class TrafficDashboardState:
 
     def _next_sample_locked(self):
         if self._sequence_index >= len(self._sequence):
-            self._sequence = simulation.get_traffic_data_stream(SIMULATION_BATCH_SIZE)
+            self._sequence = data_loader.get_traffic_data_stream(SIMULATION_BATCH_SIZE)
             self._sequence_index = 0
         sample = self._sequence[self._sequence_index]
         self._sequence_index += 1
@@ -142,7 +142,7 @@ class MultiRouteDashboardState:
             for _ in range(self.num_routes)
         ]
         self._sequences = [
-            simulation.get_route_traffic_stream(i, SIMULATION_BATCH_SIZE)
+            data_loader.get_route_traffic_stream(i, SIMULATION_BATCH_SIZE)
             for i in range(self.num_routes)
         ]
         self._seq_indices = [0] * self.num_routes
@@ -203,12 +203,9 @@ class MultiRouteDashboardState:
         idx = self._seq_indices[route_id]
         seq = self._sequences[route_id]
         if idx >= len(seq):
-            self._sequences[route_id] = simulation.get_route_traffic_stream(
-                route_id, SIMULATION_BATCH_SIZE
-            )
+            # Wrap around to the beginning of the same route data
             self._seq_indices[route_id] = 0
             idx = 0
-            seq = self._sequences[route_id]
         sample = seq[idx]
         self._seq_indices[route_id] = idx + 1
         return sample
